@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <!-- Cực kỳ quan trọng: Giúp giao diện hiển thị đúng kích thước tràn viền trên điện thoại -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trợ Lý Bỏ Túi</title>
+    
+    <!-- Nhúng phông chữ Lexend từ Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Nhúng thư viện Icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Kết nối với file CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container" id="appContainer">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title-group">
+                <i class="fa-solid fa-glasses logo-icon"></i>
+                <div>
+                    <div class="header-title">Trợ Lý Bỏ Túi</div>
+                    <div class="header-subtitle">Hỗ Trợ Người Già & Khó Đọc</div>
+                </div>
+            </div>
+            <div class="a11y-controls">
+                <!-- Nút Trợ năng: Phông chữ và Phóng to A+ -->
+                <button id="btnChangeFont" class="a11y-btn"><i class="fa-solid fa-font"></i> Phông</button>
+                <button id="btnZoomText" class="a11y-btn">A+</button>
+            </div>
+        </header>
+
+        <!-- Tabs chuyển đổi giữa Nhận diện thuốc và Đọc văn bản -->
+        <div class="tabs-container" role="tablist" aria-label="Chức năng">
+            <button type="button" id="tabMedicine" class="tab active" role="tab" aria-selected="true">
+                <i class="fa-solid fa-capsules" style="color: #EF4444;"></i> Nhận diện thuốc
+            </button>
+            <button type="button" id="tabText" class="tab inactive" role="tab" aria-selected="false">
+                <i class="fa-solid fa-align-left"></i> Đọc văn bản
+            </button>
+        </div>
+
+        <div id="appStatus" class="app-status" role="status" aria-live="polite"></div>
+
+        <!-- KHU VỰC 1: NHẬN DIỆN THUỐC (Mặc định hiển thị) -->
+        <div id="sectionMedicine" role="tabpanel">
+            <div class="info-card">
+                <h3><i class="fa-solid fa-capsules" style="color: #EF4444;"></i> Nhận diện & Tra cứu thuốc:</h3>
+                <p>Chụp ảnh vỏ hộp thuốc hoặc gõ tên bên dưới. Hệ thống sẽ đối chiếu CSDL chuẩn và đọc to liều dùng!</p>
+            </div>
+
+            <!-- Khung tìm kiếm văn bản -->
+            <div class="search-section" style="margin-top: 12px;">
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Nhập tên thuốc (ví dụ: Panadol...)">
+                    <button id="btnSearch" class="search-btn">
+                        <i class="fa-solid fa-magnifying-glass"></i> Tìm & Đọc
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nút thao tác Camera / Thư viện -->
+            <div class="action-buttons">
+                <button id="btnCamera" class="btn-primary">
+                    <i class="fa-solid fa-camera"></i> CHỤP ẢNH THUỐC
+                </button>
+                <button id="btnGallery" class="btn-secondary">
+                    <i class="fa-solid fa-folder-open" style="color: #FCD34D;"></i> CHỌN ẢNH TỪ MÁY
+                </button>
+            </div>
+        </div>
+
+        <!-- KHU VỰC 2: ĐỌC VĂN BẢN (Mặc định ẩn) -->
+        <div id="sectionText" role="tabpanel" hidden>
+            <div class="text-reader-container">
+                <textarea id="textContent" placeholder="Nội dung văn bản quét được từ hình ảnh hoặc kết quả tra cứu sẽ tự động xuất hiện ở đây..."></textarea>
+                
+                <button id="btnPlayAudio" class="btn-primary" style="background-color: #10B981;">
+                    <i class="fa-solid fa-volume-high"></i> PHÁT GIỌNG ĐỌC
+                </button>
+            </div>
+            
+            <div class="action-buttons" style="margin-top: 12px;">
+                <button id="btnScanText" class="btn-secondary">
+                    <i class="fa-solid fa-camera"></i> QUÉT VĂN BẢN MỚI
+                </button>
+            </div>
+        </div>
+
+        <!-- Các thẻ Input ẩn để kích hoạt hệ thống file của điện thoại -->
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+        <input type="file" id="galleryInput" accept="image/*" style="display: none;">
+    </div>
+
+    <!-- QUAN TRỌNG: Phải có type="module" để chạy được các lệnh import Firebase trong app.js -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
