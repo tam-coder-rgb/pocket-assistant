@@ -2,100 +2,390 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <!-- Cực kỳ quan trọng: Giúp giao diện hiển thị đúng kích thước tràn viền trên điện thoại -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trợ Lý Bỏ Túi</title>
-    
-    <!-- Nhúng phông chữ Lexend từ Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Nhúng thư viện Icon FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Kết nối với file CSS -->
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <title>Medidocx AI - Trợ Lý Đọc Thuốc & Văn Bản</title>
+    <link rel="stylesheet" href="style.css?v=4.6">
 </head>
 <body>
-    <div class="app-container" id="appContainer">
-        <!-- Header -->
+    <div class="app-container">
+
+        <!-- ==================================================== -->
+        <!-- 1. THANH TIÊU ĐỀ (HEADER GỌN GÀNG, SANG TRỌNG) -->
+        <!-- ==================================================== -->
         <header class="header">
-            <div class="header-title-group">
-                <i class="fa-solid fa-glasses logo-icon"></i>
+            <div class="header-title">
+                <span class="logo">👓</span>
                 <div>
-                    <div class="header-title">Trợ Lý Bỏ Túi</div>
-                    <div class="header-subtitle">Hỗ Trợ Người Già & Khó Đọc</div>
+                    <h1>Medidocx AI</h1>
+                    <span class="header-subtitle" id="header-subtitle">Trợ lý nhận diện và hướng dẫn dùng thuốc</span>
                 </div>
             </div>
-            <div class="a11y-controls">
-                <!-- Nút Trợ năng: Phông chữ và Phóng to A+ -->
-                <button id="btnChangeFont" class="a11y-btn"><i class="fa-solid fa-font"></i> Phông</button>
-                <button id="btnZoomText" class="a11y-btn">A+</button>
+            <div class="header-actions">
+                <button id="btn-theme-toggle" class="btn-header-icon" title="Chuyển chế độ Sáng / Tối">☀️</button>
+                <button id="btn-info-toggle" class="btn-header-icon" title="Cài đặt cỡ chữ và trợ năng">⚙️</button>
             </div>
         </header>
 
-        <!-- Tabs chuyển đổi giữa Nhận diện thuốc và Đọc văn bản -->
-        <div class="tabs-container" role="tablist" aria-label="Chức năng">
-            <button type="button" id="tabMedicine" class="tab active" role="tab" aria-selected="true">
-                <i class="fa-solid fa-capsules" style="color: #EF4444;"></i> Nhận diện thuốc
+        <!-- ==================================================== -->
+        <!-- 2. THANH CHUYỂN CHẾ ĐỘ (CHỈ HIỆN Ở MÀN HÌNH CHỌN) -->
+        <!-- ==================================================== -->
+        <div id="mode-selector" class="mode-selector">
+            <button id="btnChonThuoc" class="mode-tab mode-tab-thuoc active">
+                💊 NHẬN DIỆN THUỐC
             </button>
-            <button type="button" id="tabText" class="tab inactive" role="tab" aria-selected="false">
-                <i class="fa-solid fa-align-left"></i> Đọc văn bản
+            <button id="btnChonVanBan" class="mode-tab mode-tab-vanban">
+                📄 ĐỌC VĂN BẢN
             </button>
         </div>
 
-        <div id="appStatus" class="app-status" role="status" aria-live="polite"></div>
+        <!-- ==================================================== -->
+        <!-- 3. MÀN HÌNH CHÍNH (ACTION SCREEN - 1 TRANG DUY NHẤT) -->
+        <!-- ==================================================== -->
+        <main id="action-screen" class="action-screen">
 
-        <!-- KHU VỰC 1: NHẬN DIỆN THUỐC (Mặc định hiển thị) -->
-        <div id="sectionMedicine" role="tabpanel">
-            <div class="info-card">
-                <h3><i class="fa-solid fa-capsules" style="color: #EF4444;"></i> Nhận diện & Tra cứu thuốc:</h3>
-                <p>Chụp ảnh vỏ hộp thuốc hoặc gõ tên bên dưới. Hệ thống sẽ đối chiếu CSDL chuẩn và đọc to liều dùng!</p>
+            <!-- CẢNH BÁO KẾT NỐI SERVER (HIỂN THỊ KHI CHƯA KẾT NỐI ĐƯỢC BACKEND) -->
+            <div id="server-alert-banner" style="display: none; background: rgba(220, 38, 38, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 0.9rem; color: #fca5a5; align-items: center; justify-content: space-between; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.2rem;">⚠️</span>
+                    <span><strong>Chưa kết nối Server:</strong> Vui lòng dán link Cloudflare/VPS để sử dụng AI.</span>
+                </div>
+                <button id="btn-open-server-config" type="button" style="white-space: nowrap; background: #dc2626; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    Cấu hình ngay
+                </button>
             </div>
 
-            <!-- Khung tìm kiếm văn bản -->
-            <div class="search-section" style="margin-top: 12px;">
-                <div class="search-box">
-                    <input type="text" id="searchInput" class="search-input" placeholder="Nhập tên thuốc (ví dụ: Panadol...)">
-                    <button id="btnSearch" class="search-btn">
-                        <i class="fa-solid fa-magnifying-glass"></i> Tìm & Đọc
+            <!-- PHÂN VÙNG 1: CHẾ ĐỘ THUỐC -->
+            <section id="section-thuoc">
+                <!-- NÚT CHỤP ẢNH THUỐC KHỔNG LỒ (1 CHẠM LÀ MỞ MÁY ẢNH / TỆP) -->
+                <label id="btnChupThuoc" for="camera-input" class="btn-hero-capture btn-hero-thuoc">
+                    <span class="hero-icon" id="iconChupThuoc">📸</span>
+                    <span class="hero-title" id="titleChupThuoc">BẤM ĐỂ CHỤP ẢNH THUỐC</span>
+                    <span class="hero-sub" id="subChupThuoc">Chạm vào đây để mở máy ảnh chụp vỏ hộp thuốc</span>
+                </label>
+                <label for="file-input" class="btn-choose-file-link" id="link-file-thuoc">
+                    📁 Hoặc bấm vào đây để chọn ảnh thuốc có sẵn từ thư viện ảnh
+                </label>
+
+                <!-- Ô TRA CỨU NHANH THEO TÊN (CHỐNG TRÀN MÀN HÌNH) -->
+                <div class="med-search-card" style="margin-top: 10px;">
+                    <div class="search-input-group">
+                        <input type="text" id="med-search-input" placeholder="Nhập tên thuốc để tìm..." autocomplete="off">
+                        <button id="btn-search-med" class="btn-search">🔍 Tìm</button>
+                    </div>
+                    <div class="quick-chips">
+                        <span class="chips-label">Thuốc mẫu chuẩn CSDL:</span>
+                        <button class="med-chip" data-name="Acetylcystein">💊 Acetylcystein</button>
+                        <button class="med-chip" data-name="Ambroxol">💊 Ambroxol</button>
+                        <button class="med-chip" data-name="Atorvastatin">💊 Atorvastatin</button>
+                        <button class="med-chip" data-name="Captopril">💊 Captopril</button>
+                        <button class="med-chip" data-name="Ciprofloxacin">💊 Ciprofloxacin</button>
+                    </div>
+                </div>
+
+                <!-- VÙNG KÉO THẢ (CHỈ DÀNH CHO MÁY TÍNH) -->
+                <div id="drop-zone-thuoc" class="drop-zone pc-only" style="margin-top: 8px;">
+                    <span>📥 Trên máy tính: Kéo thả file ảnh vào đây hoặc bấm <strong>Ctrl + V</strong> để dán ảnh</span>
+                </div>
+            </section>
+
+            <!-- PHÂN VÙNG 2: CHẾ ĐỘ VĂN BẢN (ẨN BAN ĐẦU) -->
+            <section id="section-vanban" style="display: none;">
+                <!-- NÚT CHỤP VĂN BẢN KHỔNG LỒ -->
+                <label id="btnChupVanBan" for="camera-input" class="btn-hero-capture btn-hero-vanban">
+                    <span class="hero-icon" id="iconChupVanBan">📸</span>
+                    <span class="hero-title" id="titleChupVanBan">BẤM ĐỂ CHỤP VĂN BẢN</span>
+                    <span class="hero-sub" id="subChupVanBan">Chụp tài liệu, sách báo, hóa đơn để nghe đọc</span>
+                </label>
+                <label for="file-input" class="btn-choose-file-link" id="link-file-vanban">
+                    📁 Hoặc bấm vào đây để chọn tài liệu có sẵn từ thư viện ảnh
+                </label>
+
+                <!-- VÙNG KÉO THẢ VĂN BẢN (CHỈ DÀNH CHO MÁY TÍNH) -->
+                <div id="drop-zone-vanban" class="drop-zone pc-only" style="margin-top: 8px;">
+                    <span>📥 Trên máy tính: Kéo thả tài liệu vào đây hoặc bấm <strong>Ctrl + V</strong> để dán ảnh</span>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ==================================================== -->
+        <!-- 4. MÀN HÌNH ĐANG XỬ LÝ (LOADING OVERLAY) -->
+        <!-- ==================================================== -->
+        <div id="loading-card" class="loading-card" style="display: none;">
+            <div class="spinner"></div>
+            <div class="loading-text-box">
+                <h4 id="loading-title">AI đang đọc và phân tích thuốc...</h4>
+                <p id="loading-sub">Xin vui lòng chờ trong giây lát</p>
+            </div>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- 5. MÀN HÌNH KẾT QUẢ RÕ RÀNG (RESULT VIEW - GỌN 1 TRANG) -->
+        <!-- ==================================================== -->
+        <div id="result-card" class="result-card" style="display: none;">
+
+            <!-- NÚT ĐIỀU HƯỚNG ĐẦU TRANG (NÚT QUAY LẠI TO RÕ NẰM TRÊN CÙNG) -->
+            <div class="result-top-actions">
+                <button id="btnVeTrangChu" class="btn-back-prominent">
+                    <span class="back-arrow-icon">⬅</span> <span>QUAY LẠI TRANG CHÍNH</span>
+                </button>
+            </div>
+
+            <!-- CẢNH BÁO CHỤP NHẦM TÀI LIỆU KHI Ở TAB THUỐC -->
+            <div id="notice-not-medicine" class="notice-box" style="display: none;">
+                <h4>⚠️ HÌNH ẢNH NÀY KHÔNG PHẢI LÀ THUỐC!</h4>
+                <p>Đây là tài liệu hoặc sách báo thông thường. Bấm nút bên dưới để chuyển sang tab Văn bản và nghe đọc:</p>
+                <button id="btn-quick-switch-doc" class="btn-switch-tab">Chuyển sang Tab Văn Bản Ngay ➔</button>
+            </div>
+
+            <!-- HUY HIỆU NGUỒN DỮ LIỆU -->
+            <div id="result-badge" class="badge badge-db">
+                ✅ DỮ LIỆU CHÍNH XÁC TỪ CƠ SỞ DỮ LIỆU CHUẨN
+            </div>
+
+            <!-- KHỐI 1: HIỂN THỊ KẾT QUẢ THUỐC -->
+            <div id="medicine-display-box" class="info-content-box">
+                <!-- TÊN THUỐC SIÊU TO -->
+                <div class="card-medicine-title">
+                    <div class="title-label">💊 TÊN THUỐC</div>
+                    <div id="lblTenThuoc" class="title-value">Đang tải tên thuốc...</div>
+                </div>
+
+                <!-- NÚT PHÂN TÍCH AI (KÍCH HOẠT KHI CHƯA CÓ TRONG CSDL) -->
+                <button id="btnPhanTichAI" class="btn-ai-active" style="display: none;">
+                    🤖 BẤM ĐỂ PHÂN TÍCH BẰNG AI 🤖
+                </button>
+
+                <!-- BỐ CỤC CHIA 2 CỘT TRÊN LAPTOP / 1 CỘT TRÊN MOBILE (ĐỒNG BỘ MẮT THẤY - TAI NGHE) -->
+                <div class="desktop-two-col" id="med-details-container">
+                    <!-- CỘT 1: CÔNG DỤNG & CÁCH DÙNG (THEO ĐÚNG TRÌNH TỰ ĐỒNG BỘ GIỌNG ĐỌC) -->
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- 1. CÔNG DỤNG CHỮA BỆNH & HOẠT CHẤT (ĐẶT LÊN TRƯỚC LIỀU DÙNG) -->
+                        <div class="info-block block-indication">
+                            <div class="info-block-header">
+                                <span class="info-block-label">🎯 CÔNG DỤNG & HOẠT CHẤT:</span>
+                            </div>
+                            <div id="lblCongDung" class="info-block-value val-normal">Theo chỉ định bác sĩ</div>
+                            <div id="lblHoatChat" class="info-sub-text">Hoạt chất: Theo bao bì</div>
+                        </div>
+
+                        <!-- 2. CÁCH DÙNG & LIỀU LƯỢNG NỔI BẬT -->
+                        <div class="info-block block-dosage">
+                            <div class="info-block-header">
+                                <span class="info-block-label">⏰ CÁCH DÙNG & LIỀU LƯỢNG:</span>
+                            </div>
+                            <div id="lblThoiDiem" class="info-block-value">Chưa có thông tin</div>
+                            <div class="dosage-sub-row">
+                                <span>• <strong>Người lớn:</strong> <span id="lblLieuNguoiLon">Chưa rõ</span></span>
+                                <span>• <strong>Trẻ em:</strong> <span id="lblLieuTreEm">Chưa rõ</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CỘT 2: LƯU Ý ĐẶC BIỆT & THÔNG TIN AI (NẾU CÓ) -->
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- 3. LƯU Ý ĐẶC BIỆT CẢNH BÁO -->
+                        <div class="info-block block-warning">
+                            <div class="info-block-header">
+                                <span class="info-block-label">⚠️ LƯU Ý QUAN TRỌNG:</span>
+                            </div>
+                            <div id="lblLuuYChiTiet" class="info-block-value">Không có lưu ý đặc biệt</div>
+                        </div>
+
+                        <!-- 4. THÔNG TIN BỔ SUNG CHỈ HIỆN KHI DÙNG CHẾ ĐỘ AI (HẠN DÙNG & ẢNH MỜ) -->
+                        <div id="ai-extra-container" style="display: none; flex-direction: column; gap: 8px;">
+                            <div class="info-block block-dosage" id="box-han-dung-ai" style="display: none;">
+                                <div class="info-block-header">
+                                    <span class="info-block-label">📅 HẠN SỬ DỤNG (AI SOI ẢNH):</span>
+                                </div>
+                                <div id="lblHanDungAI" class="info-block-value val-normal">Xem trên bao bì</div>
+                            </div>
+                            <div class="info-block block-warning" id="box-thong-tin-mo-ai" style="display: none;">
+                                <div class="info-block-header">
+                                    <span class="info-block-label">🔍 THÔNG TIN CẦN KIỂM TRA LẠI:</span>
+                                </div>
+                                <div id="lblThongTinMoAI" class="info-block-value">Không phát hiện phần không rõ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KHỐI 2: HIỂN THỊ KẾT QUẢ VĂN BẢN (CHẾ ĐỘ ĐỌC NGUYÊN VĂN & TÓM TẮT DYSLEXIA) -->
+            <div id="doc-display-box" class="info-content-box" style="display: none;">
+                <!-- THANH CÔNG CỤ CHỨC NĂNG DÀNH RIÊNG CHO VĂN BẢN -->
+                <div class="doc-toolbar">
+                    <button id="btnDocToggleSummary" class="btn-doc-action btn-doc-toggle">
+                        <span class="btn-icon" id="iconDocToggle">✨</span> <span id="textDocToggle">Thu gọn / Tóm tắt ý chính</span>
+                    </button>
+                </div>
+
+                <!-- KHUNG CHỨA VĂN BẢN DUY NHẤT: THIẾT KẾ CHO NGƯỜI KHÓ ĐỌC DYSLEXIA -->
+                <div class="doc-readable-container">
+                    <div id="lblDocContent" class="doc-readable-text">Đang tải nội dung văn bản...</div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- BẢNG ĐIỀU KHIỂN ÂM THANH TO BỰ DƯỚI ĐÁY -->
+            <!-- ==================================================== -->
+            <div class="audio-control-bar">
+                <!-- NÚT NGHE LẠI TO KHỔNG LỒ -->
+                <button id="btnNgheLai" class="btn-sound-main">
+                    <span class="btn-icon" id="icon-nghe-lai">🔊</span>
+                    <span class="btn-text" id="text-nghe-lai">BẤM ĐỂ NGHE LẠI</span>
+                </button>
+
+                <!-- HÀNG NÚT PHỤ: LƯU Ý & DỪNG ĐỌC (CHIỀU CAO NGANG NÚT NGHE LẠI, CHIỀU RỘNG BẰNG NHAU) -->
+                <div class="audio-secondary-row">
+                    <button id="btnLuuYThuoc" class="btn-sound-sub btn-sound-yellow" disabled>
+                        <span class="btn-icon" id="icon-luu-y">🔔</span>
+                        <span class="btn-text" id="text-luu-y">Nghe lưu ý</span>
+                    </button>
+                    <button id="btnDungDoc" class="btn-sound-sub btn-sound-red">
+                        <span class="btn-icon" id="icon-dung-doc">⏹</span>
+                        <span class="btn-text" id="text-dung-doc">Dừng đọc</span>
+                    </button>
+                    <!-- NÚT MỞ CHAT — chỉ hiện ở chế độ THUỐC -->
+                    <button id="btnOpenChat" class="btn-sound-sub btn-sound-chat" style="display: none;">
+                        <span class="btn-icon">💬</span>
+                        <span class="btn-text">Hỏi thêm</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Nút thao tác Camera / Thư viện -->
-            <div class="action-buttons">
-                <button id="btnCamera" class="btn-primary">
-                    <i class="fa-solid fa-camera"></i> CHỤP ẢNH THUỐC
-                </button>
-                <button id="btnGallery" class="btn-secondary">
-                    <i class="fa-solid fa-folder-open" style="color: #FCD34D;"></i> CHỌN ẢNH TỪ MÁY
+            <!-- NÚT CHỤP TIẾP Ở CUỐI TRANG -->
+            <label id="btnChupTiepBottom" for="camera-input" class="btn-hero-capture-compact" style="margin-top: 4px;">
+                📸 BẤM ĐỂ CHỤP TIẾP THUỐC MỚI
+            </label>
+            <label for="file-input" class="btn-choose-file-link" style="margin-top: 2px;">
+                📁 Hoặc chọn ảnh có sẵn từ thư viện ảnh
+            </label>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- 7. CHAT PANEL — Trò chuyện 2 chiều về thuốc          -->
+        <!-- ==================================================== -->
+        <div id="chat-panel" class="chat-panel" style="display: none;">
+            <div class="chat-panel-header">
+                <div class="chat-panel-title">
+                    <span>💬</span>
+                    <span id="chat-panel-drug-name">Hỏi về thuốc</span>
+                </div>
+                <button id="btn-close-chat" class="btn-close" title="Đóng chat">✕</button>
+            </div>
+
+            <!-- Vùng hiển thị tin nhắn -->
+            <div id="chat-messages" class="chat-messages">
+                <div class="chat-welcome">
+                    <span class="chat-welcome-icon">💊</span>
+                    <p>Bạn có thể hỏi tôi bất cứ điều gì về loại thuốc này!</p>
+                    <div class="chat-quick-questions" id="chat-quick-questions">
+                        <button class="chat-quick-btn">Thuốc này có tác dụng phụ gì?</button>
+                        <button class="chat-quick-btn">Có được dùng cho trẻ em không?</button>
+                        <button class="chat-quick-btn">Uống khi nào trong ngày?</button>
+                        <button class="chat-quick-btn">Tương tác với thuốc khác không?</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ô nhập tin nhắn -->
+            <div class="chat-input-row">
+                <textarea id="chat-input" class="chat-input" rows="1"
+                    placeholder="Hỏi về thuốc này..." maxlength="500"></textarea>
+                <button id="btn-chat-send" class="btn-chat-send" title="Gửi câu hỏi">
+                    <span id="chat-send-icon">➤</span>
                 </button>
             </div>
         </div>
 
-        <!-- KHU VỰC 2: ĐỌC VĂN BẢN (Mặc định ẩn) -->
-        <div id="sectionText" role="tabpanel" hidden>
-            <div class="text-reader-container">
-                <textarea id="textContent" placeholder="Nội dung văn bản quét được từ hình ảnh hoặc kết quả tra cứu sẽ tự động xuất hiện ở đây..."></textarea>
-                
-                <button id="btnPlayAudio" class="btn-primary" style="background-color: #10B981;">
-                    <i class="fa-solid fa-volume-high"></i> PHÁT GIỌNG ĐỌC
-                </button>
-            </div>
-            
-            <div class="action-buttons" style="margin-top: 12px;">
-                <button id="btnScanText" class="btn-secondary">
-                    <i class="fa-solid fa-camera"></i> QUÉT VĂN BẢN MỚI
+        <!-- ==================================================== -->
+        <!-- 6. MODAL CÀI ĐẶT TRỢ NĂNG (GỌN GÀNG, ẨN MẶC ĐỊNH) -->
+        <!-- ==================================================== -->
+        <div id="info-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⚙️ Cài đặt trợ năng & Giọng đọc</h3>
+                    <button id="btn-close-info" class="btn-close">✕</button>
+                </div>
+
+                <!-- CẤU HÌNH SERVER API (HỖ TRỢ GITHUB PAGES & CLOUDFLARE TUNNEL) -->
+                <div class="settings-group" style="background: rgba(37,99,235,0.06); padding: 12px; border-radius: 10px; border: 1px solid rgba(37,99,235,0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span class="settings-label" style="margin: 0; font-weight: 700;">🌐 Địa chỉ Server API:</span>
+                        <span id="server-status-pill" style="font-size: 0.75rem; padding: 3px 8px; border-radius: 12px; background: #e5e7eb; color: #374151; font-weight: 600;">Đang kiểm tra...</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="url" id="server-url-input" placeholder="https://xxxx.trycloudflare.com hoặc IP VPS" 
+                               style="flex: 1; min-width: 0; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, #cbd5e1); font-size: 0.88rem; outline: none; background: var(--card-inner, #fff); color: var(--text-main, inherit);">
+                        <button id="btn-save-server-url" type="button" style="white-space: nowrap; padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            Lưu & Thử
+                        </button>
+                    </div>
+                    <div id="server-status-msg" style="font-size: 0.8rem; margin-top: 6px; color: #64748b;">
+                        Dán link từ <code>start_cloudflare.bat</code> hoặc VPS của bạn (Cần có <strong>https://</strong>).
+                    </div>
+                </div>
+
+                <!-- TỐC ĐỘ ĐỌC (ĐÃ CHUYỂN VÀO CÀI ĐẶT) -->
+                <div class="settings-group">
+                    <span class="settings-label">🔊 Tốc độ giọng đọc:</span>
+                    <div class="speed-pill-group" id="speed-pill-group">
+                        <button type="button" class="btn-speed-pill" data-speed="0.5">0.5x</button>
+                        <button type="button" class="btn-speed-pill" data-speed="0.8">0.8x</button>
+                        <button type="button" class="btn-speed-pill active" data-speed="1.0">1.0x</button>
+                        <button type="button" class="btn-speed-pill" data-speed="1.2">1.2x</button>
+                        <button type="button" class="btn-speed-pill" data-speed="1.5">1.5x</button>
+                        <button type="button" class="btn-speed-pill" data-speed="2.0">2.0x</button>
+                    </div>
+                </div>
+
+                <!-- CỠ CHỮ -->
+                <div class="settings-group">
+                    <span class="settings-label">Phóng to cỡ chữ:</span>
+                    <div class="btn-group-row">
+                        <button id="btn-font-normal" class="btn-setting-option active">Chuẩn (100%)</button>
+                        <button id="btn-font-large" class="btn-setting-option">To (120%)</button>
+                        <button id="btn-font-xlarge" class="btn-setting-option">Rất to (140%)</button>
+                    </div>
+                </div>
+
+                <!-- PHÔNG CHỮ -->
+                <div class="settings-group">
+                    <span class="settings-label">Kiểu chữ:</span>
+                    <div class="btn-group-row">
+                        <button id="btn-font-lexend" class="btn-setting-option active">Lexend (Dễ đọc)</button>
+                        <button id="btn-font-dyslexic" class="btn-setting-option">OpenDyslexic</button>
+                    </div>
+                </div>
+
+                <!-- TOÀN BỘ CHỮ QUÉT GỐC (ĐÃ CHUYỂN VÀO CÀI ĐẶT) -->
+                <div class="settings-group">
+                    <span class="settings-label">🔍 Toàn bộ chữ quét gốc (OCR):</span>
+                    <div class="raw-ocr-box">
+                        <pre id="raw-ocr-text" class="raw-ocr-text">(Chưa có dữ liệu quét)</pre>
+                    </div>
+                </div>
+
+                <button id="btn-close-info-footer" class="btn-hero-capture-compact" style="padding: 10px; font-size: 1rem;">
+                    ✓ Đóng cài đặt
                 </button>
             </div>
         </div>
 
-        <!-- Các thẻ Input ẩn để kích hoạt hệ thống file của điện thoại -->
-        <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
-        <input type="file" id="galleryInput" accept="image/*" style="display: none;">
     </div>
 
-    <!-- QUAN TRỌNG: Phải có type="module" để chạy được các lệnh import Firebase trong app.js -->
-    <script type="module" src="app.js"></script>
+    <!-- INPUT DUY NHẤT ĐỂ CHỌN ẢNH / MÁY ẢNH (Ẩn chuẩn CSS, KHÔNG dùng display:none) -->
+    <input type="file" id="camera-input" accept="image/*" capture="environment" class="visually-hidden-input">
+    <input type="file" id="file-input" accept="image/*" class="visually-hidden-input">
+
+    <!-- AUDIO PLAYER ẨN -->
+    <audio id="audio-player" style="display: none;"></audio>
+
+    <script src="config.js?v=4.6"></script>
+    <script src="api_client.js?v=4.6"></script>
+    <script src="app.js?v=4.6"></script>
 </body>
 </html>
