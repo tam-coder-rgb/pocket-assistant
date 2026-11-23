@@ -1,0 +1,2 @@
+# Nhiều nền tảng deploy tìm requirements.txt ở thư mục gốc -> trỏ về file thật trong backend/
+-r backend/requirements.txt

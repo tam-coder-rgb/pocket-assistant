@@ -1,0 +1,29 @@
+# Cấu hình deploy Render (Blueprint): Render đọc file này khi tạo dịch vụ từ repo
+services:
+  - type: web
+    name: medidocx
+    runtime: python
+    plan: free
+    region: singapore              # gần Việt Nam nhất
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      # sync: false -> Render hỏi giá trị khi tạo dịch vụ, không lưu khóa trong repo
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CARTESIA_API_KEYS       # dạng JSON: ["sk_car_1", "sk_car_2"]
+        sync: false
+      - key: ADMIN_API_KEY           # quản trị thuốc từ app desktop (trùng admin_key.txt của desktop)
+        sync: false
+      # Ổ đĩa Render free bị xóa mỗi lần khởi động lại -> lưu thuốc + mp3 trên Supabase (docs/supabase_setup.md)
+      - key: DATA_STORAGE
+        value: supabase
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false

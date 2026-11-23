@@ -1,0 +1,40 @@
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# Runtime storage & data
+storage/temp/*
+!storage/temp/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
+storage/user_data/*
+!storage/user_data/.gitkeep
+*.db
+*.sqlite3
+# dữ liệu gốc (ID giọng đọc tạo sẵn), server cần khi chạy
+!data/medic_data/medicines.db
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

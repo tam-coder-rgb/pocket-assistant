@@ -1,0 +1,13 @@
+# Thư viện chạy server (production). Thư viện test nằm ở requirements-dev.txt
+fastapi>=0.135
+uvicorn>=0.30
+python-multipart>=0.0.9      # nhận file upload (UploadFile/Form)
+pydantic-settings>=2.4
+google-genai[aiohttp]>=1.0   # VLM Gemini
+httpx>=0.27                  # VLM Groq (gọi REST)
+Pillow>=10.0
+opencv-python-headless>=4.9  # kiểm tra ảnh mờ
+numpy>=1.26
+rapidfuzz>=3.0               # đối chiếu tên thuốc
+cartesia>=2.0                # giọng đọc cấp 1
+gTTS>=2.5                    # giọng đọc cấp 2 (dự phòng)
